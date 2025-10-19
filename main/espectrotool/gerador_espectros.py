@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 
 def fundo_exponencial(eixo_energia, amp, decai):
     fundo_puro = amp * np.exp(-eixo_energia * decai)
-    # Converter para float para evitar problemas de tipo
     fundo_com_ruido = np.random.poisson(fundo_puro).astype(np.float64)
     return fundo_com_ruido
 
@@ -15,7 +14,6 @@ def gerar_pico_gaussiano(eixo_energia, amp, centro, sigma):
 
 def simular_espectro(eixo_energia, params_fundo, lista_picos):
     fundo = fundo_exponencial(eixo_energia, **params_fundo)
-    # Garantir que espectro_final seja float desde o início
     espectro_final = fundo.astype(np.float64)
 
     for params_pico in lista_picos:
