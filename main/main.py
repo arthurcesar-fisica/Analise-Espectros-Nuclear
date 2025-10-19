@@ -1,54 +1,36 @@
 # main.py
 from espectrotool import (gera_espectro, mostra_espectro, salva_espectro,
-                         detectar_picos, ajustar_picos_global, 
-                         ajustar_picos_individual, visualizar_ajuste)
+                         analise_completa_espectro)
 
 # Gerar espectro de exemplo
 print("=== GERANDO ESPECTRO ===")
-NCanais = 1000
-FundoAmp = 500
-FundoDecai = 0.05
-ParametrosPicos = [
-    {'amp': 300, 'centro': 250, 'sigma': 10},
-    {'amp': 200, 'centro': 600, 'sigma': 15},
-    {'amp': 150, 'centro': 750, 'sigma': 8}
-]
+eixo_energia, dados_espectro = gera_espectro()
 
-# Gerar espectro recebendo ambos eixo_energia e dados
-eixo_energia, dados_espectro = gera_espectro(N_CANAIS=NCanais, FUNDO_AMP=FundoAmp, FUNDO_DECAI=FundoDecai, PARAMETROS_PICOS=ParametrosPicos)
-
-# Mostrar o espectro
+# Mostrar espectro original
 mostra_espectro(eixo_energia, dados_espectro)
 
-# Salvar o espectro
-salva_espectro(eixo_energia, dados_espectro, nome_arquivo="espectro_personalizado")
+# Parâmetros customizados para detecção (opcional)
+parametros_deteccao = {
+    'altura_minima': 100,
+    'distancia_minima': 25,  # Reduzido para detectar picos próximos
+    'proeminencia': 40,
+    'largura_minima': 2,
+    'suavizar': True
+}
 
-# Detectar picos automaticamente
-print("\n=== DETECTANDO PICOS ===")
-picos_info = detectar_picos(dados_espectro, altura_minima=100, distancia_minima=50, 
-                           proeminencia=50, largura_minima=5)
+# Parâmetros customizados para ajuste (opcional)
+parametros_ajuste = {
+    'tipo_pico': 'gaussiana',
+    'tipo_fundo': 'exponencial',
+    'tratar_picos_proximos': True  # Ativa o tratamento especial para picos próximos
+}
 
+# Executar análise completa
+resultados = analise_completa_espectro(
+    eixo_energia, 
+    dados_espectro,
+    parametros_deteccao=parametros_deteccao,
+    parametros_ajuste=parametros_ajuste
+)
 
-# Tentar ajuste global primeiro
-print("\n=== TENTANDO AJUSTE GLOBAL ===")
-resultado_global = ajustar_picos_global(eixo_energia, dados_espectro, picos_info, 
-                                      tipo_pico='gaussiana', grau_fundo=1)
-
-
-# Fallback para ajuste individual se o global falhar
-if not resultado_global['sucesso']:
-    print("\n=== FALLBACK PARA AJUSTE INDIVIDUAL ===")
-    resultado_ajuste = ajustar_picos_individual(eixo_energia, dados_espectro, picos_info,
-                                              tipo_pico='gaussiana')
-else:
-    resultado_ajuste = resultado_global
-
-# Visualizar resultados
-print("\n=== VISUALIZANDO RESULTADOS ===")
-visualizar_ajuste(eixo_energia, dados_espectro, picos_info, resultado_ajuste,
-                 salvar_grafico="analise_espectro.png")
-
-# Salvar dados
-salva_espectro(eixo_energia, dados_espectro)
-
-print("\n=== ANÁLISE CONCLUÍDA ===")
+print("\n=== PROCESSO CONCLUÍDO ===")

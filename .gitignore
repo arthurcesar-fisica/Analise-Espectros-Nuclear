@@ -211,3 +211,6 @@ espectro_nuclear/
 
 # Dados gerados
 dados_simulados/
+
+# Resultados de  análises
+analises_espectros/
