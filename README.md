@@ -1,49 +1,44 @@
 # Simulação e Análise de Espectros de Energia Nuclear
 
-## 📊 Descrição
-Projeto de computação científica para simular espectros de detectores nucleares e analisar sinais espectrais. Implementa detecção clássica de picos e um módulo experimental para detecção via IA.
+## 📚 Como Instalar as Dependências
 
-## 👥 Autores
-- Matheus Novello (236511)
-- João Victor Pomiglio de Oliveira (250391)  
-- Arthur Cesar (245730)
-- André de Moraes Salvi (231323)
+Para garantir que todas as bibliotecas necessárias sejam instaladas corretamente, siga os passos abaixo:
 
-## 🎯 Objetivos
+1. **Certifique-se de ter o Python instalado**  
+    Verifique se o Python está instalado em sua máquina. Recomendamos a versão 3.8 ou superior. Para verificar, execute o comando:
+    ```bash
+    python --version
+    ```
+    ou
+    ```bash
+    python3 --version
+    ```
 
-### Objetivo Geral
-Desenvolver sistema completo de simulação e análise de espectros de energia capaz de detectar automaticamente picos gaussianos em sinais ruidosos, realizar ajustes matemáticos precisos e avaliar quantitativamente a qualidade das reconstruções.
+2. **Crie e ative um ambiente virtual (opcional, mas recomendado)**  
+    Criar um ambiente virtual ajuda a isolar as dependências do projeto. Para criar e ativar um ambiente virtual, use os comandos abaixo:
 
-### Objetivos Específicos
-- Implementar simulador de espectros com fundo, múltiplos picos e ruído controlado
-- Desenvolver detecção automática de picos por análise de proeminência e largura
-- Implementar ajuste não-linear global e individual (fallback)
-- Calcular métricas de qualidade (MSE, RMSE, resíduos) e gerar visualizações comparativas
-- Validar capacidade de recuperar parâmetros conhecidos dentro das incertezas estatísticas
-- (Opcional) Implementar detecção de picos via algoritmos de machine learning
+    No Windows:
+    ```bash
+    python -m venv venv
+    venv\Scripts\activate
+    ```
 
-## 🛠️ Algoritmos e Estruturas de Dados
+    No macOS/Linux:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
-### Algoritmos Principais
-- **find_peaks (SciPy)**: Detecção de picos por proeminência e largura
-- **Filtro Savitzky-Golay**: Suavização preservando características
-- **Levenberg-Marquardt (TRF)**: Otimização não-linear via curve_fit
-- **Mersenne Twister**: Geração de números pseudo-aleatórios
-- **Mínimos Quadrados**: Ajuste de parâmetros minimizando χ²
-- **Random Forest** (Opcional): Modelo de IA para detecção de picos
+3. **Instale as dependências listadas no arquivo `requirements.txt`**  
+    Certifique-se de estar no diretório onde o arquivo `requirements.txt` está localizado e execute o comando:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-### Estruturas de Dados
-- **Arrays NumPy 1D**: Espectros, eixos, resíduos
-- **Arrays NumPy 2D**: Parâmetros de picos, matriz de covariância
-- **Lista de Dicionários**: Resultados do ajuste por pico
-- **Tuplas**: Parâmetros de fundo exponencial
-- **Dicionários**: Métricas de qualidade globais
+4. **Verifique se as bibliotecas foram instaladas corretamente**  
+    Após a instalação, você pode verificar se as bibliotecas foram instaladas executando:
+    ```bash
+    pip list
+    ```
 
-## 📚 Bibliotecas
-
-### Principais Dependências
-```python
-numpy >= 1.20        # Operações numéricas e arrays
-scipy >= 1.7         # Algoritmos científicos (find_peaks, curve_fit)
-matplotlib >= 3.3    # Visualização de dados
-scikit-learn         # Algoritmos de machine learning (opcional)
+Agora, todas as dependências necessárias para o projeto estarão configuradas e prontas para uso.

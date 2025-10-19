@@ -208,3 +208,6 @@ __marimo__/
 
 # Ambiente virtual python
 espectro_nuclear/
+
+# Dados gerados
+dados_simulados/
