@@ -6,6 +6,8 @@ from espectrotool import (gera_espectro, mostra_espectro, salva_espectro,
 print("=== GERANDO ESPECTRO ===")
 eixo_energia, dados_espectro = gera_espectro()
 
+salva_espectro(eixo_energia, dados_espectro, 'espectro_exemplo')
+
 # Mostrar espectro original
 mostra_espectro(eixo_energia, dados_espectro)
 
