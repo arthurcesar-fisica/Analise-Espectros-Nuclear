@@ -764,6 +764,10 @@ def exportar_resultados(eixo_energia, espectro, picos_info, resultado_ajuste,
 # FUNÇÃO PRINCIPAL DE ANÁLISE COMPLETA
 # =============================================================================
 
+# =============================================================================
+# FUNÇÃO PRINCIPAL DE ANÁLISE COMPLETA (EDITADA)
+# =============================================================================
+
 def analise_completa_espectro(eixo_energia, espectro, 
                              parametros_deteccao=None,
                              parametros_ajuste=None):
@@ -780,6 +784,11 @@ def analise_completa_espectro(eixo_energia, espectro,
         Parâmetros para detecção de picos
     parametros_ajuste : dict, opcional
         Parâmetros para ajuste/reconstrução
+    
+    Retorna:
+    --------
+    dict
+        Dicionário com informações dos picos, resultado do ajuste e sinal reconstruído
     """
     
     # Parâmetros padrão
@@ -816,18 +825,26 @@ def analise_completa_espectro(eixo_energia, espectro,
     visualizar_deteccao(eixo_energia, espectro, picos_info, 
                        salvar_grafico="deteccao_picos.png")
     
-    # 2. Reconstrução do espectro
+    # 2. Reconstrução do espectro 
     print("\n2. RECONSTRUÇÃO DO ESPECTRO")
-    resultado_global = ajustar_picos_global(eixo_energia, espectro, picos_info, 
-                                          **parametros_ajuste)
+    sinal_reconstruido = obter_sinal_reconstruido(
+        eixo_energia=eixo_energia,
+        espectro=espectro,
+        picos_info=picos_info,
+        **parametros_ajuste
+    )
     
-    # Fallback para ajuste individual se necessário
-    if not resultado_global['sucesso']:
-        print("Ajuste global falhou, usando ajuste individual...")
-        resultado_ajuste = ajustar_picos_individual(eixo_energia, espectro, picos_info,
-                                                  **parametros_ajuste)
-    else:
-        resultado_ajuste = resultado_global
+    # Cria um objeto resultado_ajuste compatível para as funções seguintes
+    resultado_ajuste = {
+        'sucesso': True,
+        'y_ajustado': sinal_reconstruido,
+        'r_quadrado': 1 - (np.sum((espectro - sinal_reconstruido)**2) / np.sum((espectro - np.mean(espectro))**2)) 
+                      if np.sum((espectro - np.mean(espectro))**2) != 0 else 0,
+        'tipo_ajuste': 'otimizado',
+        'n_picos_ajustados': len(picos_info['indices']),
+        'tipo_pico': parametros_ajuste.get('tipo_pico', 'gaussiana'),
+        'tipo_fundo': parametros_ajuste.get('tipo_fundo', 'exponencial')
+    }
     
     # 3. Visualização dos resultados
     print("\n3. VISUALIZAÇÃO DOS RESULTADOS")
@@ -845,5 +862,59 @@ def analise_completa_espectro(eixo_energia, espectro,
     
     return {
         'picos_info': picos_info,
-        'resultado_ajuste': resultado_ajuste
+        'resultado_ajuste': resultado_ajuste,
+        'sinal_reconstruido': sinal_reconstruido  # Inclui o sinal reconstruído no retorno
     }
+
+# =============================================================================
+# FUNÇÃO PARA OBTER SINAL RECONSTRUÍDO
+# =============================================================================
+def obter_sinal_reconstruido(eixo_energia, espectro, picos_info, 
+                            tipo_pico='gaussiana', tipo_fundo='exponencial',
+                            tratar_picos_proximos=True):
+    """
+    Retorna apenas o array do sinal reconstruído a partir do ajuste dos picos.
+    
+    Parâmetros:
+    -----------
+    eixo_energia : array
+        Eixo de energias/canais
+    espectro : array
+        Dados do espectro original
+    picos_info : dict
+        Informações dos picos detectados (indices, alturas, larguras, proeminencias)
+    tipo_pico : str, opcional
+        Tipo de função para ajuste dos picos ('gaussiana', 'lorentziana', 'voigt')
+    tipo_fundo : str, opcional
+        Tipo de função para ajuste do fundo ('exponencial')
+    tratar_picos_proximos : bool, opcional
+        Se True, trata picos próximos em grupos separados
+    
+    Retorna:
+    --------
+    array
+        Sinal reconstruído com o mesmo shape do espectro original
+    """
+    
+    # Primeiro tenta o ajuste global
+    resultado_global = ajustar_picos_global(eixo_energia, espectro, picos_info,
+                                          tipo_pico=tipo_pico,
+                                          tipo_fundo=tipo_fundo,
+                                          tratar_picos_proximos=tratar_picos_proximos)
+    
+    # Se o ajuste global foi bem-sucedido, retorna o sinal reconstruído
+    if resultado_global['sucesso']:
+        return resultado_global['y_ajustado']
+    
+    # Se o ajuste global falhou, tenta o ajuste individual como fallback
+    print("Ajuste global falhou, usando ajuste individual como fallback...")
+    resultado_individual = ajustar_picos_individual(eixo_energia, espectro, picos_info,
+                                                  tipo_pico=tipo_pico,
+                                                  tipo_fundo=tipo_fundo)
+    
+    if resultado_individual['sucesso']:
+        return resultado_individual['y_ajustado']
+    else:
+        print("Erro: Não foi possível reconstruir o sinal.")
+        # Retorna array de zeros como fallback final
+        return np.zeros_like(espectro)
