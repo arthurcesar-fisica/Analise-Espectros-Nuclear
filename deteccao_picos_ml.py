@@ -177,7 +177,7 @@ ax1.plot(energia[outliers], contagens[outliers], 'ro', markersize=3,
          alpha=0.5, label=f'{len(outliers)} pontos outliers')
 ax1.set_xlabel('Energia')
 ax1.set_ylabel('Contagens')
-ax1.set_title('Detecção de Regiões que NÃO são Ruído (Isolation Forest)')
+ax1.set_title('Detecção de regiões que NÃO são ruído (Isolation Forest)')
 ax1.legend()
 ax1.grid(True, alpha=0.3)
 
@@ -193,7 +193,7 @@ for i, resultado in enumerate(resultados_fit):
 
 ax2.set_xlabel('Energia')
 ax2.set_ylabel('Contagens')
-ax2.set_title(f'Fit Gaussiano dos {len(resultados_fit)} Picos Detectados')
+ax2.set_title(f'Fit gaussiano dos {len(resultados_fit)} picos detectados')
 ax2.legend(fontsize=8)
 ax2.grid(True, alpha=0.3)
 
@@ -201,7 +201,7 @@ plt.tight_layout()
 plt.show()
 
 # Tabela de resultados
-print(f"{'RESUMO DOS PICOS DETECTADOS':^5}")
+print(f"{'Resumo dos picos detectados':^5}")
 print(f"{'ID':<5} {'Amplitude':<12} {'Média (μ)':<15} {'Desvio (σ)':<15}")
 for r in resultados_fit:
     print(f"{r['pico_id']:<5} {r['amplitude']:<12.2f} "
