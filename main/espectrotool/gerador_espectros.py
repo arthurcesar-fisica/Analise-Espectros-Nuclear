@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from espectrotool.formato_picos import lista_dict_para_picos_info
 
 def fundo_exponencial(eixo_energia, amp, decai):
     fundo_puro = amp * np.exp(-eixo_energia * decai)
@@ -36,6 +37,8 @@ def gera_espectro(N_CANAIS=1000,
             sigma = np.random.uniform(5, 20)  # Sigma entre 5 e 20
             PARAMETROS_PICOS.append({'amp': amp, 'centro': centro, 'sigma': sigma})
 
+    picos_info = lista_dict_para_picos_info(PARAMETROS_PICOS)
+
     EIXO_ENERGIA = np.linspace(0, 1000, N_CANAIS)
     np.random.seed(42)
 
@@ -45,7 +48,7 @@ def gera_espectro(N_CANAIS=1000,
         PARAMETROS_PICOS
     )
 
-    return EIXO_ENERGIA, espectro_simulado
+    return EIXO_ENERGIA, espectro_simulado, picos_info
 
 def mostra_espectro(eixo_energia, espectro_simulado):
     plt.figure(figsize=(12, 7))

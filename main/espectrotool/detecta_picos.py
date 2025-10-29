@@ -50,8 +50,11 @@ def detectar_picos(espectro, altura_minima=None, distancia_minima=20,
     
     # Organiza informações dos picos
     picos_info = {
+        'n_picos': len(picos),
         'indices': picos,
+        'centros': picos,
         'alturas': propriedades['peak_heights'],
+        'sigmas': larguras_resultados[0],
         'proeminencias': propriedades['prominences'],
         'larguras': larguras_resultados[0],
         'posicoes_larguras': larguras_resultados[2:4],
