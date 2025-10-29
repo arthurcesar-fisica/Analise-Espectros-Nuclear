@@ -8,20 +8,21 @@ from espectrotool.formato_picos import lista_dict_para_picos_info
 def fundo_exponencial(eixo_energia, amp, decai):
     fundo_puro = amp * np.exp(-eixo_energia * decai)
     fundo_com_ruido = np.random.poisson(fundo_puro).astype(np.float64)
-    return fundo_com_ruido
+    return fundo_com_ruido, fundo_puro
 
 def gerar_pico_gaussiano(eixo_energia, amp, centro, sigma):
     return amp * np.exp(-((eixo_energia - centro)**2) / (2 * sigma**2))
 
 def simular_espectro(eixo_energia, params_fundo, lista_picos):
-    fundo = fundo_exponencial(eixo_energia, **params_fundo)
+    fundo, fundo_puro = fundo_exponencial(eixo_energia, **params_fundo)
     espectro_final = fundo.astype(np.float64)
+    magnitude_ruido = np.sqrt(np.mean(fundo_puro))
 
     for params_pico in lista_picos:
         pico = gerar_pico_gaussiano(eixo_energia, **params_pico)
         espectro_final = espectro_final + pico
     
-    return espectro_final
+    return espectro_final, magnitude_ruido
 
 def gera_espectro(N_CANAIS=1000,
                   FUNDO_AMP=500,
@@ -42,13 +43,13 @@ def gera_espectro(N_CANAIS=1000,
     EIXO_ENERGIA = np.linspace(0, 1000, N_CANAIS)
     np.random.seed(42)
 
-    espectro_simulado = simular_espectro(
+    espectro_simulado, magnitude_ruido = simular_espectro(
         EIXO_ENERGIA,
         {'amp': FUNDO_AMP, 'decai': FUNDO_DECAI},
         PARAMETROS_PICOS
     )
 
-    return EIXO_ENERGIA, espectro_simulado, picos_info
+    return EIXO_ENERGIA, espectro_simulado, picos_info, magnitude_ruido
 
 def mostra_espectro(eixo_energia, espectro_simulado):
     plt.figure(figsize=(12, 7))

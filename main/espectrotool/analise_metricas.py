@@ -98,7 +98,7 @@ class QualityMetrics:
         return float(r2)
     
     
-    def analyze_residuals(self, residuals: np.ndarray, return_detailed: bool = False) -> Dict[str, float]:
+    def analyze_residuals(self, residuals: np.ndarray) -> Dict[str, float]:
         """
         Analisa estatisticamente os resíduos do ajuste.
         
@@ -114,13 +114,8 @@ class QualityMetrics:
             
         Returns:
             Dicionário com estatísticas dos resíduos
-            
-        Exemplo:
-            >>> residuals = spectrum - fitted_model
-            >>> stats = validator.analyze_residuals(residuals)
-            >>> print(f"Bias: {stats['bias']:.3f}")
-            >>> print(f"% dentro de 1σ: {stats['within_1sigma']:.1%}")
         """
+
         if len(residuals) == 0:
             raise ValueError("Array de resíduos está vazio")
         
@@ -146,18 +141,6 @@ class QualityMetrics:
             'max': float(np.max(residuals)),
             'n_points': len(residuals)
         }
-        
-        # Teste de normalidade (opcional, mais computacionalmente caro)
-        if return_detailed:
-            # Shapiro-Wilk: testa se dados vêm de distribuição normal
-            # H0: dados são normais
-            # p > 0.05: não rejeita H0 (dados são normais)
-            if len(residuals) >= 3:  # Shapiro-Wilk precisa de pelo menos 3 pontos
-                shapiro_stat, shapiro_p = stats.shapiro(residuals)
-                result['shapiro_stat'] = float(shapiro_stat)
-                result['shapiro_pvalue'] = float(shapiro_p)
-                result['is_normal'] = bool(shapiro_p > 0.05)
-        
         return result
     
     
@@ -289,7 +272,7 @@ class QualityMetrics:
         
         # 2. Análise de resíduos
         residuals = y_true - y_pred
-        residual_stats = self.analyze_residuals(residuals, return_detailed=True)
+        residual_stats = self.analyze_residuals(residuals)
         results['residual_analysis'] = residual_stats
         
         # 3. Validação de parâmetros (se fornecidos)
@@ -319,7 +302,7 @@ class QualityMetrics:
         if noise_level is not None:
             # RMSE deve estar entre 0.5x e 2x do nível de ruído
             rmse = mse_rmse['rmse']
-            req['rmse_comparable_to_noise'] = (0.5 * noise_level <= rmse <= 2.0 * noise_level)
+            req['rmse_comparable_to_noise'] = bool((0.5 * noise_level <= rmse <= 2.0 * noise_level))
             req['noise_level'] = noise_level
             req['rmse_noise_ratio'] = rmse / noise_level
         else:
@@ -341,11 +324,11 @@ class QualityMetrics:
         
         # Armazena para uso posterior
         self.last_metrics = results
-        
+
         return results
     
     
-    def generate_report(self, results: Optional[Dict] = None, print_report: bool = True, detailed: bool = True) -> str:
+    def generate_report(self, results: Optional[Dict] = None, print_report: bool = True) -> str:
         """
         Gera relatório formatado com os resultados da validação.
         
@@ -366,7 +349,6 @@ class QualityMetrics:
         lines = []
         lines.append("\n" + "="*80)
         lines.append("RELATÓRIO DE VALIDAÇÃO DE QUALIDADE")
-        lines.append("Projeto: Análise de Espectros Nucleares")
         lines.append("="*80 + "\n")
         
         # 1. Métricas Globais
@@ -390,10 +372,6 @@ class QualityMetrics:
             lines.append(f"  % dentro de 2σ:            {ra['within_2sigma']:>11.1%}")
             lines.append(f"  Mínimo:                    {ra['min']:>12.4f}")
             lines.append(f"  Máximo:                    {ra['max']:>12.4f}")
-            
-            if 'is_normal' in ra:
-                status = "✓ SIM" if ra['is_normal'] else "✗ NÃO"
-                lines.append(f"  Shapiro-Wilk (p-value):    {ra['shapiro_pvalue']:>12.4f} ({status})")
             lines.append("")
         
         # 3. Validação de Parâmetros
@@ -425,7 +403,7 @@ class QualityMetrics:
         
         # 4. Verificação de Requisitos
         if 'requirements_check' in results:
-            lines.append("\n\n4. VERIFICAÇÃO DE REQUISITOS (Seção 9)")
+            lines.append("\n\n4. VERIFICAÇÃO DE REQUISITOS")
             lines.append("-" * 80)
             
             req = results['requirements_check']
