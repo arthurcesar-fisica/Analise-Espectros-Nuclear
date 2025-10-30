@@ -34,8 +34,7 @@ parametros_deteccao = {
 # Parâmetros customizados para ajuste (opcional)
 parametros_ajuste = {
     'tipo_pico': 'gaussiana',
-    'tipo_fundo': 'exponencial',
-    'tratar_picos_proximos': True  # Ativa o tratamento especial para picos próximos
+    'tipo_fundo': 'exponencial'
 }
 
 # Executar análise completa
