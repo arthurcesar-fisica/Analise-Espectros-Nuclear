@@ -356,7 +356,7 @@ def analise_completa_espectro(eixo_energia, espectro,
     if parametros_deteccao is None:
         parametros_deteccao = {
             'altura_minima': None,
-            'distancia_minima': 30,
+            'distancia_minima': 5,
             'proeminencia': None,
             'largura_minima': 3,
             'suavizar': True
@@ -365,8 +365,7 @@ def analise_completa_espectro(eixo_energia, espectro,
     if parametros_ajuste is None:
         parametros_ajuste = {
             'tipo_pico': 'gaussiana',
-            'tipo_fundo': 'exponencial',
-            'tratar_picos_proximos': True
+            'tipo_fundo': 'exponencial'
         }
     
     print("=" * 60)
@@ -375,7 +374,8 @@ def analise_completa_espectro(eixo_energia, espectro,
     
     # 1. Detecção de picos
     print("\n1. DETECÇÃO DE PICOS")
-    from .detecta_picos import detectar_picos, visualizar_deteccao
+    from .detecta_picos import detectar_picos
+    from .visualizacao_dados import visualizar_deteccao
     picos_info = detectar_picos(espectro, **parametros_deteccao)
     
     if len(picos_info['indices']) == 0:
@@ -388,24 +388,12 @@ def analise_completa_espectro(eixo_energia, espectro,
     
     # 2. Reconstrução do espectro 
     print("\n2. RECONSTRUÇÃO DO ESPECTRO")
-    sinal_reconstruido = obter_sinal_reconstruido(
+    sinal_reconstruido, resultado_ajuste = obter_sinal_reconstruido(
         eixo_energia=eixo_energia,
         espectro=espectro,
         picos_info=picos_info,
         **parametros_ajuste
     )
-    
-    # Cria um objeto resultado_ajuste compatível para as funções seguintes
-    resultado_ajuste = {
-        'sucesso': True,
-        'y_ajustado': sinal_reconstruido,
-        'r_quadrado': 1 - (np.sum((espectro - sinal_reconstruido)**2) / np.sum((espectro - np.mean(espectro))**2)) 
-                      if np.sum((espectro - np.mean(espectro))**2) != 0 else 0,
-        'tipo_ajuste': 'otimizado',
-        'n_picos_ajustados': len(picos_info['indices']),
-        'tipo_pico': parametros_ajuste.get('tipo_pico', 'gaussiana'),
-        'tipo_fundo': parametros_ajuste.get('tipo_fundo', 'exponencial')
-    }
     
     # 3. Visualização dos resultados
     print("\n3. VISUALIZAÇÃO DOS RESULTADOS")
@@ -417,9 +405,7 @@ def analise_completa_espectro(eixo_energia, espectro,
     print("\n4. EXPORTAÇÃO DOS RESULTADOS")
     exportar_resultados(eixo_energia, espectro, picos_info, resultado_ajuste)
     
-    print("\n" + "=" * 60)
     print("ANÁLISE CONCLUÍDA COM SUCESSO!")
-    print("=" * 60)
     
     return {
         'picos_info': picos_info,
@@ -457,10 +443,22 @@ def obter_sinal_reconstruido(eixo_energia, espectro, picos_info,
     resultado_individual = ajuste_pico_individual(eixo_energia, espectro, picos_info,
                                                   tipo_pico=tipo_pico,
                                                   tipo_fundo=tipo_fundo)
-    
+
     if resultado_individual['sucesso']:
-        return resultado_individual['y_ajustado']
+        yAjustado = resultado_individual['y_ajustado']
     else:
         print("Erro: Não foi possível reconstruir o sinal.")
-        # Retorna array de zeros como fallback final
-        return np.zeros_like(espectro)
+        yAjustado = np.zeros_like(espectro)
+    
+    resultado_ajuste = {
+        'sucesso': True,
+        'y_ajustado': yAjustado,
+        'r_quadrado': 1 - (np.sum((espectro - yAjustado)**2) / np.sum((espectro - np.mean(espectro))**2))
+                          if np.sum((espectro - np.mean(espectro))**2) != 0 else 0,
+        'tipo_ajuste': 'otimizado',
+        'n_picos_ajustados': len(picos_info['indices']),
+        'tipo_pico': tipo_pico,
+        'tipo_fundo': tipo_fundo
+    }
+
+    return yAjustado, resultado_ajuste
