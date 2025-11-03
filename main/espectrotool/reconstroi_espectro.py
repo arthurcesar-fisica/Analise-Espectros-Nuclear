@@ -365,8 +365,7 @@ def analise_completa_espectro(eixo_energia, espectro,
     if parametros_ajuste is None:
         parametros_ajuste = {
             'tipo_pico': 'gaussiana',
-            'tipo_fundo': 'exponencial',
-            'tratar_picos_proximos': True
+            'tipo_fundo': 'exponencial'
         }
     
     print("=" * 60)

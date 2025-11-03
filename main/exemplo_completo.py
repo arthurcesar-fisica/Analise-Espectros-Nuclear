@@ -108,21 +108,4 @@ results = validator.check_requirements(
 )
 validator.generate_report(results)
 
-'''
-print(picos_info_para_array(picos_info))
-print(picos_info_para_array(resultados["picos_info"]))
-
-# Calcula resíduos
-residuos = dados_espectro - resultados["resultado_ajuste"]["y_ajustado"]
-
-visualizar_resultados_completo(
-        results=results,
-        residuos=residuos,
-        eixo_energia=eixo_energia,
-        salvar_dashboard="dashboard_validacao.png",
-        salvar_residuos="analise_residuos_detalhada.png",
-        mostrar=True
-)
-'''
-
 print("\n=== PROCESSO CONCLUÍDO ===")
