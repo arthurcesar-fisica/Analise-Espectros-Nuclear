@@ -1,5 +1,5 @@
 #analise_metricas.py
-
+import os
 import numpy as np
 from typing import Dict, List, Tuple, Optional
 from scipy import stats
@@ -328,7 +328,7 @@ class QualityMetrics:
         return results
     
     
-    def generate_report(self, results: Optional[Dict] = None, print_report: bool = True) -> str:
+    def generate_report(self, results: Optional[Dict] = None, print_report: bool = True, save_report: bool = True) -> str:
         """
         Gera relatório formatado com os resultados da validação.
         
@@ -450,6 +450,15 @@ class QualityMetrics:
         if print_report:
             print(report)
         
+        if save_report:
+            pasta_analises = "analises_espectros"
+            os.makedirs(pasta_analises, exist_ok=True)
+            
+            caminho_arquivo = os.path.join(pasta_analises, "relatorio.txt")
+
+            with open(caminho_arquivo, "w", encoding="utf-8") as f:
+                f.write(report)
+
         return report
 
 
