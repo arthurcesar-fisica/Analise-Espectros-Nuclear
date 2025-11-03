@@ -1,12 +1,11 @@
-# main.py
-import os  # Adicione esta linha
+import os 
 from espectrotool import (gera_espectro, mostra_espectro, salva_espectro,
                          analise_completa_espectro, carrega_espectro, 
-                         lista_arquivos_dados, visualiza_dados_carregados)
+                         lista_arquivos_dados)
 
 # Opção 1: Gerar novo espectro
 print("=== GERANDO NOVO ESPECTRO ===")
-eixo_energia, dados_espectro = gera_espectro()
+eixo_energia, dados_espectro, picos_info, magnitude_ruido = gera_espectro()
 salva_espectro(eixo_energia, dados_espectro, 'espectro_exemplo')
 mostra_espectro(eixo_energia, dados_espectro)
 
@@ -28,7 +27,7 @@ if arquivos_disponiveis:
         # Parâmetros customizados para detecção
         parametros_deteccao = {
             'altura_minima': 100,
-            'distancia_minima': 25,
+            'distancia_minima': 5,
             'proeminencia': 40,
             'largura_minima': 2,
             'suavizar': True
@@ -37,8 +36,7 @@ if arquivos_disponiveis:
         # Parâmetros customizados para ajuste
         parametros_ajuste = {
             'tipo_pico': 'gaussiana',
-            'tipo_fundo': 'exponencial',
-            'tratar_picos_proximos': True
+            'tipo_fundo': 'exponencial'
         }
 
         # Executar análise completa

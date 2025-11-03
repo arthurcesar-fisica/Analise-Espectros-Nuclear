@@ -356,7 +356,7 @@ def analise_completa_espectro(eixo_energia, espectro,
     if parametros_deteccao is None:
         parametros_deteccao = {
             'altura_minima': None,
-            'distancia_minima': 30,
+            'distancia_minima': 5,
             'proeminencia': None,
             'largura_minima': 3,
             'suavizar': True
