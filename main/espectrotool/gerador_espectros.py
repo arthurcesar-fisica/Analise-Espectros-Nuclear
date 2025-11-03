@@ -51,15 +51,6 @@ def gera_espectro(N_CANAIS=1000,
 
     return EIXO_ENERGIA, espectro_simulado, picos_info, magnitude_ruido
 
-def mostra_espectro(eixo_energia, espectro_simulado):
-    plt.figure(figsize=(12, 7))
-    plt.plot(eixo_energia, espectro_simulado, drawstyle='steps-mid')
-    plt.title('Espectro Simulado com Fundo e Múltiplos Picos')
-    plt.xlabel('Canal de Energia')
-    plt.ylabel('Contagens')
-    plt.grid(True)
-    plt.show()
-
 def salva_espectro(eixo_energia, espectro_simulado, nome_arquivo="espectro_simulado"):
     # Criar a pasta 'dados_simulados' se não existir
     pasta_dados = "dados_simulados"

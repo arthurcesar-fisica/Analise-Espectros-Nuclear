@@ -5,6 +5,8 @@ from espectrotool import (gera_espectro, mostra_espectro, salva_espectro,
 from espectrotool.analise_metricas import quick_validation, QualityMetrics
 from espectrotool.formato_picos import picos_info_para_array
 
+import numpy as np
+
 #Determinar parâmetros dos picos gerados
 #OBS: Limitação!! Por enquanto, os picos tem que ser ordenados em ordem crescente de centro!
 parametros_picos = [
@@ -27,32 +29,17 @@ mostra_espectro(eixo_energia, dados_espectro)
 
 
 # =============================================================================
-# 1. Detecção de picos
+# 1. Detecção e reconstrução de picos
 # =============================================================================
 
 # Parâmetros customizados para detecção (opcional)
 parametros_deteccao = {
     'altura_minima': 100,
-    'distancia_minima': 25,  # Reduzido para detectar picos próximos
+    'distancia_minima': 25,
     'proeminencia': 40,
     'largura_minima': 2,
     'suavizar': True
 }
-
-print("\n1. DETECÇÃO DE PICOS")
-picos_info = detectar_picos(dados_espectro, **parametros_deteccao)
-
-if len(picos_info['indices']) == 0:
-    print("Nenhum pico detectado. Análise interrompida.")
-
-# Visualiza detecção
-visualizar_deteccao(eixo_energia, dados_espectro, picos_info, 
-                    salvar_grafico="deteccao_picos.png")
-
-
-# =============================================================================
-# 2. Reconstrução do espectro
-# =============================================================================
 
 # Parâmetros customizados para ajuste (opcional)
 parametros_ajuste = {
@@ -60,43 +47,17 @@ parametros_ajuste = {
     'tipo_fundo': 'exponencial'
 }
 
-print("\n2. RECONSTRUÇÃO DO ESPECTRO")
-sinal_reconstruido, resultado_ajuste = obter_sinal_reconstruido(
-    eixo_energia=eixo_energia,
-    espectro=dados_espectro,
-    picos_info=picos_info,
-    **parametros_ajuste
+# Executar análise completa
+resultados = analise_completa_espectro(
+    eixo_energia, 
+    dados_espectro,
+    parametros_deteccao=parametros_deteccao,
+    parametros_ajuste=parametros_ajuste
 )
 
-
 # =============================================================================
-# 3. Visualização dos resultados
+# 2. Visualização dos resultados
 # =============================================================================
-
-print("\n3. VISUALIZAÇÃO DOS RESULTADOS")
-visualizar_ajuste(eixo_energia, dados_espectro, picos_info, resultado_ajuste,
-                    mostrar_componentes=True, 
-                    salvar_grafico="reconstrucao_espectro.png")
-
-
-# =============================================================================
-# 4. Exportação dos resultados
-# =============================================================================
-
-print("\n4. EXPORTAÇÃO DOS RESULTADOS")
-exportar_resultados(eixo_energia, dados_espectro, picos_info, resultado_ajuste)
-
-print("ANÁLISE CONCLUÍDA COM SUCESSO!")
-
-# =============================================================================
-# 5. Validação com métricas
-# =============================================================================
-
-resultados = {
-    'picos_info': picos_info,
-    'resultado_ajuste': resultado_ajuste,
-    'sinal_reconstruido': sinal_reconstruido 
-}
 
 validator = QualityMetrics()
 results = validator.check_requirements(
