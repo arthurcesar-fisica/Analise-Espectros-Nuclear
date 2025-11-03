@@ -3,6 +3,9 @@ from espectrotool import (gera_espectro, mostra_espectro, salva_espectro,
                          analise_completa_espectro, carrega_espectro, 
                          lista_arquivos_dados)
 
+from espectrotool.analise_metricas import QualityMetrics
+
+
 # Opção 1: Gerar novo espectro
 print("=== GERANDO NOVO ESPECTRO ===")
 eixo_energia, dados_espectro, picos_info, magnitude_ruido = gera_espectro()
@@ -46,6 +49,15 @@ if arquivos_disponiveis:
             parametros_deteccao=parametros_deteccao,
             parametros_ajuste=parametros_ajuste
         )
+
+        #Relatório de Métricas 
+        validator = QualityMetrics()
+        results = validator.check_requirements(
+            y_true=dados_espectro,
+            y_pred=resultados["resultado_ajuste"]["y_ajustado"],
+            noise_level= magnitude_ruido
+        )
+        validator.generate_report(results)
         
     except Exception as e:
         print(f"Erro ao processar arquivo: {e}")

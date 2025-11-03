@@ -351,19 +351,22 @@ class QualityMetrics:
         lines.append("RELATÓRIO DE VALIDAÇÃO DE QUALIDADE")
         lines.append("="*80 + "\n")
         
+        etapa = 1
+
         # 1. Métricas Globais
         if 'global_metrics' in results:
-            lines.append("1. MÉTRICAS GLOBAIS")
+            lines.append(f"{etapa}. MÉTRICAS GLOBAIS")
             lines.append("-" * 80)
             gm = results['global_metrics']
             lines.append(f"  MSE (Mean Squared Error):  {gm['mse']:>12.4f}")
             lines.append(f"  RMSE (Root MSE):           {gm['rmse']:>12.4f}")
             lines.append(f"  R² (Coef. Determinação):   {gm['r_squared']:>12.4f}")
             lines.append("")
+            etapa+=1
         
         # 2. Análise de Resíduos
         if 'residual_analysis' in results:
-            lines.append("2. ANÁLISE DE RESÍDUOS")
+            lines.append(f"{etapa}. ANÁLISE DE RESÍDUOS")
             lines.append("-" * 80)
             ra = results['residual_analysis']
             lines.append(f"  Média (Bias):              {ra['bias']:>12.4f}")
@@ -373,10 +376,11 @@ class QualityMetrics:
             lines.append(f"  Mínimo:                    {ra['min']:>12.4f}")
             lines.append(f"  Máximo:                    {ra['max']:>12.4f}")
             lines.append("")
+            etapa+=1
         
         # 3. Validação de Parâmetros
         if 'parameter_validation' in results and results['parameter_validation']:
-            lines.append("3. VALIDAÇÃO DE PARÂMETROS DOS PICOS")
+            lines.append(f"{etapa}. VALIDAÇÃO DE PARÂMETROS DOS PICOS")
             lines.append("-" * 80)
             
             pv = results['parameter_validation']
@@ -400,10 +404,11 @@ class QualityMetrics:
                         f"{param_data['tolerance_percent']:>11.1f}% "
                         f"{status:>8}"
                     )
+            etapa+=1
         
         # 4. Verificação de Requisitos
         if 'requirements_check' in results:
-            lines.append("\n\n4. VERIFICAÇÃO DE REQUISITOS")
+            lines.append(f"\n\n{etapa}. VERIFICAÇÃO DE REQUISITOS")
             lines.append("-" * 80)
             
             req = results['requirements_check']
