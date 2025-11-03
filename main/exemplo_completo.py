@@ -5,20 +5,19 @@ from espectrotool import (gera_espectro, mostra_espectro, salva_espectro,
 from espectrotool.analise_metricas import quick_validation, QualityMetrics
 from espectrotool.formato_picos import picos_info_para_array
 
-#Determinar parâmetros dos picos gerados
-#OBS: Limitação!! Por enquanto, os picos tem que ser ordenados em ordem crescente de centro!
-parametros_picos = [
-            {'amp': 400, 'centro': 250, 'sigma': 10},
-            {'amp': 200, 'centro': 550, 'sigma': 10}
+# Picos a simular (listar em ordem crescente de 'centro')
+PARAMETROS_PICOS = [
+    {'amp': 400, 'centro': 250, 'sigma': 10},
+    {'amp': 400, 'centro': 350, 'sigma': 10},
+    {'amp': 200, 'centro': 450, 'sigma': 10}
 ]
-
 
 # =============================================================================
 # 0. Geração do espectro
 # =============================================================================
 
 print("=== GERANDO ESPECTRO ===")
-eixo_energia, dados_espectro, picos_info, magnitude_ruido = gera_espectro(PARAMETROS_PICOS = parametros_picos)
+eixo_energia, dados_espectro, picos_info, magnitude_ruido = gera_espectro(PARAMETROS_PICOS = PARAMETROS_PICOS)
 
 salva_espectro(eixo_energia, dados_espectro, 'espectro_exemplo')
 
@@ -31,16 +30,16 @@ mostra_espectro(eixo_energia, dados_espectro)
 # =============================================================================
 
 # Parâmetros customizados para detecção (opcional)
-parametros_deteccao = {
+PARAMETROS_DETECCAO = {
     'altura_minima': 100,
-    'distancia_minima': 25,  # Reduzido para detectar picos próximos
+    'distancia_minima': 5,
     'proeminencia': 40,
     'largura_minima': 2,
     'suavizar': True
 }
 
 print("\n1. DETECÇÃO DE PICOS")
-picos_info = detectar_picos(dados_espectro, **parametros_deteccao)
+picos_info = detectar_picos(dados_espectro, **PARAMETROS_DETECCAO)
 
 if len(picos_info['indices']) == 0:
     print("Nenhum pico detectado. Análise interrompida.")
@@ -55,7 +54,7 @@ visualizar_deteccao(eixo_energia, dados_espectro, picos_info,
 # =============================================================================
 
 # Parâmetros customizados para ajuste (opcional)
-parametros_ajuste = {
+PARAMETROS_AJUSTE = {
     'tipo_pico': 'gaussiana',
     'tipo_fundo': 'exponencial'
 }
@@ -65,7 +64,7 @@ sinal_reconstruido, resultado_ajuste = obter_sinal_reconstruido(
     eixo_energia=eixo_energia,
     espectro=dados_espectro,
     picos_info=picos_info,
-    **parametros_ajuste
+    **PARAMETROS_AJUSTE
 )
 
 
@@ -92,20 +91,41 @@ print("ANÁLISE CONCLUÍDA COM SUCESSO!")
 # 5. Validação com métricas
 # =============================================================================
 
+print("\n5. EXPORTAÇÃO DOS RESULTADOS")
+
 resultados = {
     'picos_info': picos_info,
     'resultado_ajuste': resultado_ajuste,
     'sinal_reconstruido': sinal_reconstruido 
 }
 
-validator = QualityMetrics()
-results = validator.check_requirements(
-    y_true=dados_espectro,
-    y_pred=resultados["resultado_ajuste"]["y_ajustado"],
-    true_params=picos_info_para_array(picos_info),
-    fitted_params=picos_info_para_array(resultados["picos_info"]),
-    noise_level= magnitude_ruido
+validator = QualityMetrics(
+    tolerance_center=0.02,      # 2%
+    tolerance_amplitude=0.10,   # 10%
+    tolerance_sigma=0.15        # 15%
 )
-validator.generate_report(results)
+
+#Arrays com parâmetros dos picos
+params_verdadeiros = picos_info_para_array(picos_info)
+params_detectados = picos_info_para_array(resultados['picos_info'])
+
+#Futura implementação: Emparelhar os Picos
+"""
+params_v_matched, params_d_matched = validator._match_peaks_by_center(
+    params_verdadeiros, params_detectados
+)
+"""
+
+# Validar
+analise_metricas = validator.check_requirements(
+    y_true=dados_espectro,
+    y_pred=resultados['sinal_reconstruido'],
+    true_params=params_verdadeiros,
+    fitted_params=params_detectados,
+    noise_level=magnitude_ruido
+)
+
+# Relatório
+validator.generate_report(analise_metricas)
 
 print("\n=== PROCESSO CONCLUÍDO ===")
