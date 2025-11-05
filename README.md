@@ -1,83 +1,78 @@
 # Simulação e Análise de Espectros de Energia Nuclear
 
-## 📊 Descrição
-Projeto de computação científica para simular espectros de detectores nucleares e analisar sinais espectrais. Implementa detecção clássica de picos e um módulo experimental para detecção via IA.
+## Descrição
+Projeto de computação científica para simular espectros de detectores nucleares e analisar sinais espectrais. Implementa tanto uma detecção clássica de picos (baseada em `scipy.signal`) quanto um pipeline robusto de detecção em duas etapas, utilizando Machine Learning (`IsolationForest`) para identificar anomalias no ruído.
 
-## 👥 Autores
+## Autores
 - Matheus Novello (236511)
-- João Victor Pomiglio de Oliveira (250391)  
+- João Victor Pomiglio de Oliveira (250391)  
 - Arthur Cesar (245730)
 - André de Moraes Salvi (231323)
 
-## 🎯 Objetivos
+## Funcionalidades Principais
+- **Simulação de Espectros:** Gera espectros realistas com fundo exponencial, múltiplos picos Gaussianos e ruído Poisson controlado.
+- **Detecção Clássica:** Encontra picos usando filtros (`Savitzky-Golay`) e análise de parâmetros topológicos (proeminência, altura, largura) via `scipy.signal.find_peaks`.
+- **Detecção com Machine Learning:** Identifica picos com alta robustez ao ruído através de um pipeline que aprende o que é "ruído de fundo" e depois encontra "anomalias" (os picos).
+- **Análise e Fit:** Extrai parâmetros físicos precisos (Amplitude, Média-μ, Desvio-σ) de cada pico detectado através de ajuste de curvas (`curve_fit`).
+- **Validação e Métricas:** Compara os picos detectados com os picos verdadeiros (em simulações) e gera um relatório de performance (`analise_metricas.py`).
 
-### Objetivo Geral
-Desenvolver sistema completo de simulação e análise de espectros de energia capaz de detectar automaticamente picos gaussianos em sinais ruidosos, realizar ajustes matemáticos precisos e avaliar quantitativamente a qualidade das reconstruções.
+## 🛠️ Metodologias de Detecção
 
-### Objetivos Específicos
-- Implementar simulador de espectros com fundo, múltiplos picos e ruído controlado
-- Desenvolver detecção automática de picos por análise de proeminência e largura
-- Implementar ajuste não-linear global e individual (fallback)
-- Calcular métricas de qualidade (MSE, RMSE, resíduos) e gerar visualizações comparativas
-- Validar capacidade de recuperar parâmetros conhecidos dentro das incertezas estatísticas
-- (Opcional) Implementar detecção de picos via algoritmos de machine learning
+O projeto implementa duas abordagens distintas para a detecção de picos:
 
-## 🛠️ Algoritmos e Estruturas de Dados
+### 1. Método Clássico (`detecta_picos.py`)
+Esta abordagem usa um fluxo de trabalho tradicional de processamento de sinais:
+1.  **Suavização:** Um filtro **Savitzky-Golay** é aplicado ao espectro para reduzir o ruído de alta frequência, preservando a forma dos picos.
+2.  **Detecção:** A função `scipy.signal.find_peaks` é usada para encontrar máximos locais que atendam a critérios rigorosos definidos pelo usuário (ex: `altura_minima`, `proeminencia_minima`, `largura_minima`).
+3.  **Resultado:** É muito rápido, mas seus resultados são altamente dependentes dos parâmetros de entrada, podendo gerar muitos falsos positivos em espectros com ruído complexo.
 
-### Algoritmos Principais
-- **find_peaks (SciPy)**: Detecção de picos por proeminência e largura
-- **Filtro Savitzky-Golay**: Suavização preservando características
-- **Levenberg-Marquardt (TRF)**: Otimização não-linear via curve_fit
-- **Mersenne Twister**: Geração de números pseudo-aleatórios
-- **Mínimos Quadrados**: Ajuste de parâmetros minimizando χ²
-- **Random Forest** (Opcional): Modelo de IA para detecção de picos
+### 2. Método de Machine Learning (`deteccao_picos_ml.py`)
+Esta é a abordagem mais avançada e robusta do projeto, ideal para espectros ruidosos. Ela opera em duas etapas:
 
-### Estruturas de Dados
-- **Arrays NumPy 1D**: Espectros, eixos, resíduos
-- **Arrays NumPy 2D**: Parâmetros de picos, matriz de covariância
-- **Lista de Dicionários**: Resultados do ajuste por pico
-- **Tuplas**: Parâmetros de fundo exponencial
-- **Dicionários**: Métricas de qualidade globais
+1.  **Estágio 1: Detecção de Anomalias (com `IsolationForest`)**
+    * Um modelo de Machine Learning (`IsolationForest` do Scikit-learn) é primeiro treinado com dados de **ruído puro**. Isso ensina o modelo a reconhecer o padrão estatístico de um "sinal normal" (o fundo).
+    * O espectro real é então analisado pelo modelo. Pontos que **não** se encaixam no padrão de ruído (ou seja, são "anomalias") recebem um score negativo e são marcados como uma "região de interesse".
 
-## 📚 Como Instalar as Bibliotecas
+2.  **Estágio 2: Fit Gaussiano (`curve_fit`)**
+    * As "regiões de interesse" identificadas pelo ML (que são os picos em potencial) são agrupadas.
+    * Uma função Gaussiana (`scipy.optimize.curve_fit`) é então "encaixada" em cada uma dessas regiões.
+    * Este "fit" estatístico extrai os parâmetros físicos precisos (amplitude, média, desvio padrão) de cada pico, rejeitando aqueles que não se parecem com uma curva Gaussiana ou que estão abaixo de um limite de amplitude.
 
-Para garantir que todas as bibliotecas necessárias sejam instaladas corretamente, siga os passos abaixo:
+## Como Instalar as Bibliotecas
 
-1. **Certifique-se de ter o Python instalado**  
-    Verifique se o Python está instalado em sua máquina. Recomendamos a versão 3.8 ou superior. Para verificar, execute o comando:
+**Nota Importante:** A estrutura do projeto requer que a maioria dos comandos sejam executados de dentro da pasta `main`.
+
+1.  **Clone o repositório**
     ```bash
-    python --version
-    ```
-    ou
-    ```bash
-    python3 --version
+    git clone [URL_DO_REPOSITORIO]
+    cd [NOME_DO_REPOSITORIO]
     ```
 
-2. **Crie e ative um ambiente virtual (opcional, mas recomendado)**  
-    Criar um ambiente virtual ajuda a isolar as dependências do projeto. Para criar e ativar um ambiente virtual, use os comandos abaixo:
-
-    No Windows:
+2.  **Crie e ative um ambiente virtual (`.venv`)**
+    Recomendamos fortemente o uso de um ambiente virtual para isolar as dependências.
     ```bash
-    python -m venv venv
-    venv\Scripts\activate
+    # Use o executável do Python que você deseja usar (ex: Python 3.11)
+    python -m venv .venv
     ```
+    *Para ativar no Windows (PowerShell):*
+    ```powershell
+    .\.venv\Scripts\Activate.ps1
+    ```
+    *(Se você receber um erro de "execução de scripts foi desabilitada", execute este comando uma vez: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` e pressione 'S')*
 
-    No macOS/Linux:
+3.  **Instale as dependências**
+    O arquivo `requirements.txt` está dentro da pasta `main`.
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
+    # Certifique-se de que seu .venv está ativo
+    pip install -r main/requirements.txt
     ```
+    *(Se encontrar erros de `ModuleNotFoundError` mesmo após a instalação, seu `pip` pode estar instalando pacotes "globais". Use este comando para forçar a instalação dentro do .venv: `pip install --target=.\.venv\Lib\site-packages --ignore-installed -r main\requirements.txt`)*
 
-3. **Instale as dependências listadas no arquivo `requirements.txt`**  
-    Certifique-se de estar no diretório onde o arquivo `requirements.txt` está localizado e execute o comando:
-    ```bash
-    pip install -r requirements.txt
-    ```
+## Como Executar
 
-4. **Verifique se as bibliotecas foram instaladas corretamente**  
-    Após a instalação, você pode verificar se as bibliotecas foram instaladas executando:
-    ```bash
-    pip list
-    ```
+Todos os testes devem ser executados com o ambiente virtual **ativo** e de dentro da pasta `main`.
 
-Agora, todas as dependências necessárias para o projeto estarão configuradas e prontas para uso.
+**Primeiro, entre na pasta `main`:**
+```powershell
+# Estando na raiz do projeto (ex: C:\GitHub\Analise-Espectros-Nuclear-novo)
+cd main
