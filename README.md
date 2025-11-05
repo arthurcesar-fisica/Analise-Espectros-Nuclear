@@ -16,7 +16,7 @@ Projeto de computação científica para simular espectros de detectores nuclear
 - **Análise e Fit:** Extrai parâmetros físicos precisos (Amplitude, Média-μ, Desvio-σ) de cada pico detectado através de ajuste de curvas (`curve_fit`).
 - **Validação e Métricas:** Compara os picos detectados com os picos verdadeiros (em simulações) e gera um relatório de performance (`analise_metricas.py`).
 
-## 🛠️ Metodologias de Detecção
+## Metodologias de Detecção
 
 O projeto implementa duas abordagens distintas para a detecção de picos:
 
