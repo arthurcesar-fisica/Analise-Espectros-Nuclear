@@ -50,15 +50,21 @@ Esta é a abordagem mais avançada e robusta do projeto, ideal para espectros ru
 
 2.  **Crie e ative um ambiente virtual (`.venv`)**
     Recomendamos fortemente o uso de um ambiente virtual para isolar as dependências.
-    ```bash
+
+    *No Windows (PowerShell):*
+    ```powershell
     # Use o executável do Python que você deseja usar (ex: Python 3.11)
     python -m venv .venv
-    ```
-    *Para ativar no Windows (PowerShell):*
-    ```powershell
     .\.venv\Scripts\Activate.ps1
     ```
     *(Se você receber um erro de "execução de scripts foi desabilitada", execute este comando uma vez: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` e pressione 'S')*
+
+    *No macOS ou Linux (Ubuntu):*
+    ```bash
+    # Use o executável do Python que você deseja usar (ex: python3)
+    python3 -m venv .venv
+    source .venv/bin/activate
+    ```
 
 3.  **Instale as dependências**
     O arquivo `requirements.txt` está dentro da pasta `main`.
@@ -70,9 +76,15 @@ Esta é a abordagem mais avançada e robusta do projeto, ideal para espectros ru
 
 ## Como Executar
 
+**Nota Importante:** O projeto não foi feito para ser executado com um comando genérico `python "nome_do_arquivo.py"`, pois a maioria dos arquivos são **módulos** (bibliotecas) e não scripts.
+
+Apenas os scripts de **exemplo** (`exemplo_...`) e **detecção** (`deteccao_picos_ml.py`) são executáveis. As instruções abaixo são para os **dois arquivos corretos** que devem ser executados.
+
+---
+
 Todos os testes devem ser executados com o ambiente virtual **ativo** e de dentro da pasta `main`.
 
 **Primeiro, entre na pasta `main`:**
-```powershell
-# Estando na raiz do projeto (ex: C:\GitHub\Analise-Espectros-Nuclear-novo)
+```bash
+# Estando na raiz do projeto (ex: /home/usuario/Analise-Espectros-Nuclear-novo)
 cd main
