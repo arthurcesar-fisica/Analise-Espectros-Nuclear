@@ -103,19 +103,19 @@ python NOME_DO_ARQUIVO.py
 
 Primeiramente faça o download do arquivo main.zip disponivel no repositorio.
 
-Abra um novo notebook no google colaboratory e faça o upload do do arquivo main.zip no armazenamante da seeção.
+Abra um novo notebook no google colaboratory e faça o upload do do arquivo main.zip no armazenamanto em nuvem do colab.
 
 ### Passo 1:
-Selecione o icone de pasta no canoto superior direito da janela:
+Selecione o ícone de pasta no canoto superior direito da janela:
 
 ![alt text](imagens/tutorial1.PNG)
 
-Clique no simbolo de upolad e selecione o arquivo main.zip no local salvo em seu computador
+Clique no símbolo de upolad e selecione o arquivo main.zip no local salvo em seu computador.
 
 ### Passo 2:
 ![alt text](imagens/tutorial2.PNG)
 
-O arquivo deverá aparecer na sua arvore de arquivos
+O arquivo deverá aparecer na sua arvore de arquivos.
 
 ### Resultado:
 ![alt text](imagens/tutorial3.PNG)
@@ -124,11 +124,10 @@ Em seguida execute o seguinte comando em uma celula para extrair os arquivos:
 
 
 ```python
-# Estando na raiz do projeto (ex: /home/usuario/Analise-Espectros-Nuclear-novo)
 !unzip main.zip
 ```
 
-Em seguida é possivel executar qualquer exeplo disponivel na pada diretamente usando o comando subtituindo o NOME_DO_ARQUIVO pelo nome do programa desejado: 
+Em seguida é possivel executar qualquer exemplo disponível na pasta diretamente usando o comando abaixo e subtituindo o NOME_DO_ARQUIVO pelo nome do programa desejado: 
 
 ```python
 %run main/NOME_DO_ARQUIVO.py
@@ -142,7 +141,7 @@ Exemplo de uso:
 %run main/exemplo_completo.py
 ```
 
-Outra maneira é copiar e colar o código diretamente em uma celula e em seguida utilizar. Por fim, para usuarios avançados a bibloteca já estará disponovil para uso normal penas será necessario importa-la no inico do código:
+Outra maneira é copiar e colar o código diretamente em uma célula e em seguida a executar. Por fim, para usuários avançados a bibloteca já estará disponível para uso normal sendo apenas necessario importá-la no início do código:
 
 ```python
 import espectrotool
