@@ -74,17 +74,77 @@ Esta é a abordagem mais avançada e robusta do projeto, ideal para espectros ru
     ```
     *(Se encontrar erros de `ModuleNotFoundError` mesmo após a instalação, seu `pip` pode estar instalando pacotes "globais". Use este comando para forçar a instalação dentro do .venv: `pip install --target=.\.venv\Lib\site-packages --ignore-installed -r main\requirements.txt`)*
 
-## Como Executar
+**Observação:** Se houver erros de bibliotecas não encontradas talvez seja necessário abrir um novo terminal para que as bibliotecas recém instaladas possam ser acessadas.
 
-**Nota Importante:** O projeto não foi feito para ser executado com um comando genérico `python "nome_do_arquivo.py"`, pois a maioria dos arquivos são **módulos** (bibliotecas) e não scripts.
+## Como Executar Localmente
 
-Apenas os scripts de **exemplo** (`exemplo_...`) e **detecção** (`deteccao_picos_ml.py`) são executáveis. As instruções abaixo são para os **dois arquivos corretos** que devem ser executados.
+**Nota Importante:** O projeto não foi feito para ser executado com o comando  `python "nome_do_arquivo.py"`, pois a maioria dos arquivos são **módulos** (bibliotecas) e não scripts executáveis.
+
+Apenas os scripts de **exemplo** (`exemplo_...`) e **detecção** (`deteccao_picos_ml.py`) são executáveis criados para fins demontrativos, afim de que o usuário possa se familiarilizar com o uso da biblioteca. 
+
+As instruções abaixo são apenas para os **os arquivos corretos** que devem ser executados.
 
 ---
 
-Todos os testes devem ser executados com o ambiente virtual **ativo** e de dentro da pasta `main`.
+Recomenda-se que todos os testes sejam executados com o ambiente virtual **ativo** para impedir conflitos com outras bibliotecas já instaladasno sistema do usuário e de dentro da pasta `main`.
 
 **Primeiro, entre na pasta `main`:**
 ```bash
 # Estando na raiz do projeto (ex: /home/usuario/Analise-Espectros-Nuclear-novo)
 cd main
+```
+
+**Execute o comando no terminal com o nome do arquivo de exemplo desejado `NOME_DO_ARQUIVO.py`:**
+```bash
+python NOME_DO_ARQUIVO.py
+```
+
+## Como Executar no Google Colab
+
+Primeiramente faça o download do arquivo main.zip disponivel no repositorio.
+
+Abra um novo notebook no google colaboratory e faça o upload do do arquivo main.zip no armazenamante da seeção.
+
+### Passo 1:
+Selecione o icone de pasta no canoto superior direito da janela:
+
+![alt text](imagens/tutorial1.PNG)
+
+Clique no simbolo de upolad e selecione o arquivo main.zip no local salvo em seu computador
+
+### Passo 2:
+![alt text](imagens/tutorial2.PNG)
+
+O arquivo deverá aparecer na sua arvore de arquivos
+
+### Resultado:
+![alt text](imagens/tutorial3.PNG)
+
+Em seguida execute o seguinte comando em uma celula para extrair os arquivos:
+
+
+```python
+# Estando na raiz do projeto (ex: /home/usuario/Analise-Espectros-Nuclear-novo)
+!unzip main.zip
+```
+
+Em seguida é possivel executar qualquer exeplo disponivel na pada diretamente usando o comando subtituindo o NOME_DO_ARQUIVO pelo nome do programa desejado: 
+
+```python
+%run main/NOME_DO_ARQUIVO.py
+```
+
+Exemplo de uso:
+
+
+```python
+# Abre o exemplo exemplo_completo.py
+%run main/exemplo_completo.py
+```
+
+Outra maneira é copiar e colar o código diretamente em uma celula e em seguida utilizar. Por fim, para usuarios avançados a bibloteca já estará disponovil para uso normal penas será necessario importa-la no inico do código:
+
+```python
+# Abre o exemplo exemplo_completo.py
+import espectrotool
+```
