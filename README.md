@@ -145,6 +145,5 @@ Exemplo de uso:
 Outra maneira é copiar e colar o código diretamente em uma celula e em seguida utilizar. Por fim, para usuarios avançados a bibloteca já estará disponovil para uso normal penas será necessario importa-la no inico do código:
 
 ```python
-# Abre o exemplo exemplo_completo.py
 import espectrotool
 ```
